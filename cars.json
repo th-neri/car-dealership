@@ -1,0 +1,16 @@
+[
+    {
+        "car_id": 1,
+        "brand": "Honda",
+        "car_name": "Civic",
+        "car_year": 2025,
+        "price": 25.5
+    },
+    {
+        "car_id": 2,
+        "brand": "Chevrolet",
+        "car_name": "Corvette Z06",
+        "car_year": 2023,
+        "price": 120.0
+    }
+]
