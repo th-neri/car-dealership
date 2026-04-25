@@ -4,7 +4,7 @@
         "name": "Neri",
         "email": "neri123@gmail.com",
         "password": "neri123",
-        "balance": 10.0,
+        "balance": 20.0,
         "owned_cars": []
     }
 ]

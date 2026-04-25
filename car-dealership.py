@@ -36,7 +36,7 @@ def add_user(users):
                   "name": name, 
                   "email": email, 
                   "password": password, 
-                  "balance": 10.000,
+                  "balance": 0,
                   "owned_cars": []
     })
     save_user(users)
@@ -56,7 +56,7 @@ def login_user(users):
 
 def add_balance(users, current_user):
     try:
-        amount = int(input("Put a value: ").strip())
+        amount = float(input("Put a value: ").strip())
 
         if amount <= 0:
             print("You have to put a positive value.")
@@ -84,10 +84,10 @@ def show_cars(cars):
             print(f'{car['car_id']}- Brand: {car['brand']} | Name: {car['car_name']} | Year: {car['car_year']} | Price: {car['price']:.3f}')
 
 def add_car(cars):
-    brand = input("Write the brand of car: ").strip()
-    car_name = input("Write the name of car: ").strip()
-    car_year = int(input("Write the year of car: ").strip())
-    price = float(input("Write the price of car: ").strip())
+    brand = input("Brand of the car: ").strip()
+    car_name = input("Name of car: ").strip()
+    car_year = int(input("Year: ").strip())
+    price = float(input("Price of car: ").strip())
     car_id = max([car['car_id'] for car in cars], default=0) + 1
     cars.append({"car_id": car_id, "brand": brand, "car_name": car_name, "car_year": car_year, "price": price})
     save_car(cars)
@@ -128,7 +128,8 @@ def main():
             print("1. View cars available")
             print("2. Add car")
             print("3. Buy car")
-            print("4. Logout")
+            print("4. Add balance")
+            print("5. Logout")
 
             choice = input("Choose the option you want: ").strip()
 
@@ -138,6 +139,8 @@ def main():
             elif choice == "2":
                 add_car(cars)
             elif choice == "4":
+                add_balance(users, current_user)
+            elif choice == "5":
                 print("Have a nice day!")
                 current_user = None
                 continue
