@@ -12,5 +12,12 @@
         "car_name": "Corvette Z06",
         "car_year": 2023,
         "price": 120.0
+    },
+    {
+        "car_id": 3,
+        "brand": "Ford",
+        "car_name": "Mustang GT",
+        "car_year": 2026,
+        "price": 52.0
     }
 ]

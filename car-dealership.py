@@ -21,12 +21,24 @@ def save_car(cars):
     with open(cars_file, "w") as file:
         json.dump(cars, file, indent=4)
 
+#---users functions
 def add_user(users):
     name = input("Enter with your name: ").strip()
     email = input("Enter with your email: ").strip()
     password = input("Enter with your password: ").strip()
     user_id = max([u["user_id"] for u in users], default=0) + 1
-    users.append({"user_id": user_id, "name": name, "email": email, "password": password, "car_bought": None})
+    
+    for u in users:
+        if u["email"] == email:
+            print("Email already exist.")
+        return None
+    users.append({"user_id": user_id, 
+                  "name": name, 
+                  "email": email, 
+                  "password": password, 
+                  "balance": 10.000,
+                  "owned_cars": []
+    })
     save_user(users)
     print(f"Your account was saved successfully, {name}!")
 
@@ -42,7 +54,27 @@ def login_user(users):
     print("\nInvalid user or password. Try again or create your account.")
     return None
 
-#cars functions
+def add_balance(users, current_user):
+    try:
+        amount = int(input("Put a value: ").strip())
+
+        if amount <= 0:
+            print("You have to put a positive value.")
+            return current_user
+
+        for u in users:
+            if u["user_id"] == current_user["user_id"]:
+                u["balance"] += amount
+                current_user["balance"] = u["balance"]
+                break
+        save_user(users)
+        print("Balance updated!")
+
+    except ValueError:
+        print("Invalid input. Please use numbers.")
+        return current_user
+
+#---cars functions
 def show_cars(cars):
     if not cars:
         print("No cars available.\n")
@@ -59,10 +91,17 @@ def add_car(cars):
     car_id = max([car['car_id'] for car in cars], default=0) + 1
     cars.append({"car_id": car_id, "brand": brand, "car_name": car_name, "car_year": car_year, "price": price})
     save_car(cars)
-    print(f'{car_name} saved successfully!')
+    print(f'{car_name} added!')
 
+def find_car(cars, car_id):
+    for car in cars:
+        if car["car_id"] == car_id:
+            return car
+        return None
+         
 def main():
     users = load_users()
+    cars = load_cars()
     current_user = None
 
     while True:
@@ -79,13 +118,12 @@ def main():
             elif choice == "2":
                 current_user = login_user(users)
             elif choice == "3":
-                print("\nHave a good day!")
+                print("Have a good day!")
                 break
             else:
                 print("Invalid choice. Try again.")
         
         else:
-            cars = load_cars()
             print("\n---Options---")
             print("1. View cars available")
             print("2. Add car")
