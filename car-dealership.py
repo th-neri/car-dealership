@@ -30,8 +30,8 @@ def add_user(users):
     
     for u in users:
         if u["email"] == email:
-            print("Email already exist.")
-        return None
+            print("Email already exists.")
+            return None
     users.append({"user_id": user_id, 
                   "name": name, 
                   "email": email, 
@@ -55,6 +55,10 @@ def login_user(users):
     return None
 
 def add_balance(users, current_user):
+    if current_user is None:
+        print("You need an account to access this.")
+        return None
+
     try:
         amount = float(input("Put a value: ").strip())
 
@@ -69,19 +73,24 @@ def add_balance(users, current_user):
                 break
         save_user(users)
         print("Balance updated!")
+        return current_user
 
     except ValueError:
         print("Invalid input. Please use numbers.")
         return current_user
 
 #---cars functions
-def show_cars(cars):
+def show_cars(cars, current_user):
+    if current_user is None:
+        print("You need an account to access this.")
+        return None
+
     if not cars:
         print("No cars available.\n")
         return
     else:
         for car in cars:
-            print(f'{car['car_id']}- Brand: {car['brand']} | Name: {car['car_name']} | Year: {car['car_year']} | Price: {car['price']:.3f}')
+            print(f'{car["car_id"]}- Brand: {car["brand"]} | Name: {car["car_name"]} | Year: {car["car_year"]} | Price: ${car["price"]:.3f}')
 
 def add_car(cars):
     brand = input("Brand of the car: ").strip()
@@ -97,8 +106,71 @@ def find_car(cars, car_id):
     for car in cars:
         if car["car_id"] == car_id:
             return car
+    return None
+
+def buy_car(users, cars, current_user):
+    purchase = []
+    total = 0
+
+    if current_user is None:
+        print("You need an account to access this.")
         return None
-         
+    
+    while True:
+        choice = input("Choose the car you want by the ID or press L to leave: ").strip().lower()
+        if choice == "l":
+            break
+        try:
+            car_id = int(choice)
+            car = find_car(cars, car_id)
+
+            if car is None:
+                print("Car not found.")
+                continue
+
+            purchase.append(car)
+            total += car["price"]
+            print(f'you added {car["car_name"]}.')
+
+        except ValueError:
+            print("Invalid input.")
+
+        if not purchase:
+            print("No car selected.")
+            return current_user
+        
+        print(f'Total price is: ${total:.3f}')
+        print(f'Your current balance is: ${current_user["balance"]:.3f}')
+
+        #check if the user has enough balance to buy the chosen car.
+        if current_user["balance"] < total:
+            print("You don't have enough money.")
+            return current_user
+        
+        confirm = input("Are you sure you want to buy this car? (Y/N): ").strip().lower()
+        if confirm == "n":
+            print("Purchase cancelled.")
+            return current_user
+        elif confirm == "y":
+            for u in users:
+                if u["user_id"] == current_user["user_id"]:
+                    u["owned_cars"].extend([{
+                        "brand": car["brand"],
+                        "car_name": car["car_name"],
+                        "car_year": car["car_year"],
+                        "price": car["price"]
+                    } 
+                    for car in purchase])
+                    u["balance"] -= total
+                    current_user["balance"] = u["balance"]
+                    break
+            save_user(users)
+            print(f'\nPurchase completed. Congratulations, you bought {car["car_name"]}!')
+            return current_user
+        else:
+            print("Wrong input.")
+            continue
+ 
 def main():
     users = load_users()
     cars = load_cars()
@@ -107,9 +179,9 @@ def main():
     while True:
         if current_user is None:
             print("\n---Welcome to our car dealership! Please feel free to choose any option below.---")
-            print("1. Create an account.")
-            print("2. Enter with your account.")
-            print("3. Leave.")
+            print("1. Create an account")
+            print("2. Enter with your account")
+            print("3. Leave")
 
             choice = input("Enter your choice: ").strip()
 
@@ -128,21 +200,22 @@ def main():
             print("1. View cars available")
             print("2. Add car")
             print("3. Buy car")
-            print("4. Add balance")
+            print("4. Add money")
             print("5. Logout")
 
             choice = input("Choose the option you want: ").strip()
 
             if choice == "1":
                 print("\n---Cars available---")
-                show_cars(cars)
+                show_cars(cars, current_user)
             elif choice == "2":
                 add_car(cars)
+            elif choice == "3":
+                buy_car(users, cars, current_user)
             elif choice == "4":
                 add_balance(users, current_user)
             elif choice == "5":
                 print("Have a nice day!")
                 current_user = None
                 continue
-
 main()

@@ -4,7 +4,14 @@
         "name": "Neri",
         "email": "neri123@gmail.com",
         "password": "neri123",
-        "balance": 20.0,
-        "owned_cars": []
+        "balance": 38.0,
+        "owned_cars": [
+            {
+                "brand": "Chevrolet",
+                "car_name": "Corvette Z06",
+                "car_year": 2023,
+                "price": 120.0
+            }
+        ]
     }
 ]
