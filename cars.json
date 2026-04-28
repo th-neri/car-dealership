@@ -19,5 +19,12 @@
         "car_name": "Mustang GT",
         "car_year": 2026,
         "price": 52.0
+    },
+    {
+        "car_id": 4,
+        "brand": "Porsche",
+        "car_name": "911",
+        "car_year": 2012,
+        "price": 100.0
     }
 ]

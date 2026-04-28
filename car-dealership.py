@@ -3,6 +3,11 @@ import json
 users_file = "users.json"
 cars_file = "cars.json"
 
+discounts = {
+    "chevrolet": 0.25,
+    "ford": 0.20,
+}
+
 #users JSON functions
 def load_users():
     with open(users_file, "r") as file:
@@ -21,7 +26,7 @@ def save_car(cars):
     with open(cars_file, "w") as file:
         json.dump(cars, file, indent=4)
 
-#---users functions
+#--------USER FUNCTIONS
 def add_user(users):
     name = input("Enter with your name: ").strip()
     email = input("Enter with your email: ").strip()
@@ -29,15 +34,16 @@ def add_user(users):
     user_id = max([u["user_id"] for u in users], default=0) + 1
     
     for u in users:
-        if u["email"] == email:
-            print("Email already exists.")
+        if u["email"] == email or u["password"] == password:
+            print("Email or password already exists.")
             return None
     users.append({"user_id": user_id, 
                   "name": name, 
                   "email": email, 
                   "password": password, 
                   "balance": 0,
-                  "owned_cars": []
+                  "owned_cars": [],
+                  "is_admin": False
     })
     save_user(users)
     print(f"Your account was saved successfully, {name}!")
@@ -79,7 +85,7 @@ def add_balance(users, current_user):
         print("Invalid input. Please use numbers.")
         return current_user
 
-#---cars functions
+#--------CAR FUNCTIONS
 def show_cars(cars, current_user):
     if current_user is None:
         print("You need an account to access this.")
@@ -92,13 +98,22 @@ def show_cars(cars, current_user):
         for car in cars:
             print(f'{car["car_id"]}- Brand: {car["brand"]} | Name: {car["car_name"]} | Year: {car["car_year"]} | Price: ${car["price"]:.3f}')
 
-def add_car(cars):
+def add_car(cars, current_user):
+    if current_user is None or not current_user.get("is_admin", False):
+        print("Access denied. Only admins can access.")
+        return
     brand = input("Brand of the car: ").strip()
     car_name = input("Name of car: ").strip()
     car_year = int(input("Year: ").strip())
     price = float(input("Price of car: ").strip())
     car_id = max([car['car_id'] for car in cars], default=0) + 1
-    cars.append({"car_id": car_id, "brand": brand, "car_name": car_name, "car_year": car_year, "price": price})
+    cars.append({
+        "car_id": car_id, 
+        "brand": brand, 
+        "car_name": car_name, 
+        "car_year": car_year, 
+        "price": price
+    })
     save_car(cars)
     print(f'{car_name} added!')
 
@@ -107,6 +122,15 @@ def find_car(cars, car_id):
         if car["car_id"] == car_id:
             return car
     return None
+
+def apply_discount(car):
+    brand = car["brand"].lower()
+
+    if brand in discounts:
+        discount = discounts[brand]
+        discounted_price = car["price"] * (1 - discount)
+        return discounted_price, discount
+    return car["price"], 0
 
 def buy_car(users, cars, current_user):
     purchase = []
@@ -129,8 +153,12 @@ def buy_car(users, cars, current_user):
                 continue
 
             purchase.append(car)
-            total += car["price"]
-            print(f'you added {car["car_name"]}.')
+            final_price, discount = apply_discount(car)
+            total += final_price
+            if discount > 0:
+                print(f'\n{car["car_name"]} added for {car["price"]:.3f}. A special discount for {car["brand"]} cars has been applied.')
+            else:
+                print(f'\n{car["car_name"]} added for {car["price"]:.3f}!')
 
         except ValueError:
             print("Invalid input.")
@@ -147,7 +175,7 @@ def buy_car(users, cars, current_user):
             print("You don't have enough money.")
             return current_user
         
-        confirm = input("Are you sure you want to buy this car? (Y/N): ").strip().lower()
+        confirm = input("\nAre you sure you want to buy this car? (Y/N): ").strip().lower()
         if confirm == "n":
             print("Purchase cancelled.")
             return current_user
@@ -158,7 +186,7 @@ def buy_car(users, cars, current_user):
                         "brand": car["brand"],
                         "car_name": car["car_name"],
                         "car_year": car["car_year"],
-                        "price": car["price"]
+                        "price": final_price,
                     } 
                     for car in purchase])
                     u["balance"] -= total
@@ -170,7 +198,9 @@ def buy_car(users, cars, current_user):
         else:
             print("Wrong input.")
             continue
- 
+
+
+
 def main():
     users = load_users()
     cars = load_cars()
@@ -198,7 +228,8 @@ def main():
         else:
             print("\n---Options---")
             print("1. View cars available")
-            print("2. Add car")
+            if current_user.get("is_admin", False):
+                print("2. Add car(Only admins)")
             print("3. Buy car")
             print("4. Add money")
             print("5. Logout")
@@ -209,7 +240,7 @@ def main():
                 print("\n---Cars available---")
                 show_cars(cars, current_user)
             elif choice == "2":
-                add_car(cars)
+                add_car(cars, current_user)
             elif choice == "3":
                 buy_car(users, cars, current_user)
             elif choice == "4":

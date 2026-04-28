@@ -4,14 +4,55 @@
         "name": "Neri",
         "email": "neri123@gmail.com",
         "password": "neri123",
-        "balance": 38.0,
+        "balance": 56.400000000000006,
         "owned_cars": [
             {
                 "brand": "Chevrolet",
                 "car_name": "Corvette Z06",
                 "car_year": 2023,
                 "price": 120.0
+            },
+            {
+                "brand": "Ford",
+                "car_name": "Mustang GT",
+                "car_year": 2026,
+                "price": 52.0
+            },
+            {
+                "brand": "Chevrolet",
+                "car_name": "Corvette Z06",
+                "car_year": 2023,
+                "price": 90.0
+            },
+            {
+                "brand": "Ford",
+                "car_name": "Mustang GT",
+                "car_year": 2026,
+                "price": 41.6
+            },
+            {
+                "brand": "Porsche",
+                "car_name": "911",
+                "car_year": 2012,
+                "price": 100.0
             }
-        ]
+        ],
+        "is_admin": true
+    },
+    {
+        "user_id": 2,
+        "name": "Nerii",
+        "email": "neri1234@gmail.com",
+        "password": "neri1234",
+        "balance": 174.5,
+        "owned_cars": [
+            {
+                "brand": "Honda",
+                "car_name": "Civic",
+                "car_year": 2025,
+                "price": 25.5
+            }
+        ],
+        "is_admin": false
     }
 ]
