@@ -155,6 +155,7 @@ def buy_car(users, cars, current_user):
             purchase.append(car)
             final_price, discount = apply_discount(car)
             total += final_price
+            
             if discount > 0:
                 print(f'\n{car["car_name"]} added for {car["price"]:.3f}. A special discount for {car["brand"]} cars has been applied.')
             else:
@@ -198,8 +199,6 @@ def buy_car(users, cars, current_user):
         else:
             print("Wrong input.")
             continue
-
-
 
 def main():
     users = load_users()
